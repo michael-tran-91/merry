@@ -2,25 +2,25 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct array_unordered
+typedef struct array_t
 {
     array base;
     object **ptr;
     int len;
-} array_unordered;
+} array_t;
 
-static void array_unordered_init(array_unordered *p);
-static void array_unordered_deinit(array_unordered *p);
-static void array_unordered_dealloc(array_unordered *p);
+static void array_t_init(array_t *p);
+static void array_t_deinit(array_t *p);
+static void array_t_dealloc(array_t *p);
 static void array_push_back(array *p, object *obj);
 static object *array_get(array *p, int index);
 static void array_remove_index(array *p, int index);
 static int array_size(array *p);
 
-static void array_unordered_init(array_unordered *p)
+static void array_t_init(array_t *p)
 {
     object_init(&p->base.base);
-    p->base.base.dealloc = (object_dealloc)array_unordered_dealloc;
+    p->base.base.dealloc = (object_dealloc)array_t_dealloc;
     p->base.push_back = array_push_back;
     p->base.get = array_get;
     p->base.remove_index = array_remove_index;
@@ -29,7 +29,7 @@ static void array_unordered_init(array_unordered *p)
     p->len = 0;
 }
 
-static void array_unordered_deinit(array_unordered *p)
+static void array_t_deinit(array_t *p)
 {
     for (int i = 0; i < p->len; ++i) {
         RELEASE(p->ptr[i]);
@@ -43,20 +43,20 @@ static void array_unordered_deinit(array_unordered *p)
 
 array *array_create()
 {
-    array_unordered *p = (array_unordered *)malloc(sizeof(array_unordered));
-    array_unordered_init(p);
+    array_t *p = (array_t *)malloc(sizeof(array_t));
+    array_t_init(p);
     return &p->base;
 }
 
-static void array_unordered_dealloc(array_unordered *p)
+static void array_t_dealloc(array_t *p)
 {
-    array_unordered_deinit(p);
+    array_t_deinit(p);
     free(p);
 }
 
 static void array_push_back(array *a, object *obj)
 {
-    array_unordered *p = (array_unordered *)a;
+    array_t *p = (array_t *)a;
     object **ptr = realloc(p->ptr, sizeof(object *) * (p->len + 1));
     if (ptr) {
         p->ptr = ptr;
@@ -68,14 +68,14 @@ static void array_push_back(array *a, object *obj)
 
 static object *array_get(array *a, int index)
 {
-    array_unordered *p = (array_unordered *)a;
+    array_t *p = (array_t *)a;
     if (index < 0 || index >= p->len) return NULL;
     return p->ptr[index];
 }
 
 static void array_remove_index(array *a, int index)
 {
-    array_unordered *p = (array_unordered *)a;
+    array_t *p = (array_t *)a;
     if (index < 0 || index >= p->len) return;
 
     object *o = p->ptr[index];
@@ -86,6 +86,6 @@ static void array_remove_index(array *a, int index)
 
 static int array_size(array *a)
 {
-    array_unordered *p = (array_unordered *)a;
+    array_t *p = (array_t *)a;
     return p->len;
 }
