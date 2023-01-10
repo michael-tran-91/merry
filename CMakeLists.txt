@@ -6,4 +6,4 @@ project(merry)
 
 file(GLOB SRC_FILES object/*.c)
 
-add_executable(merry main.c ${SRC_FILES})
+add_library(merry STATIC ${SRC_FILES})
